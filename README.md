@@ -10,3 +10,10 @@
             - `autoconfiguration`: based on entries in the classpath, env variables, and other factors, Spring Boot can make reasonable guess of what components need to be wired and configured together
 - start a project
     - starter dependencies: DevTools, Thymeleaf, Web
+
+# Chapter 2 Developing Web applications
+- job of MVC:
+    - controller: fetch and process data
+      - view: render data to HTML
+- `lombok`: [`@Data`](https://projectlombok.org/features/Data) will automatically add getter/setter/toString/constructor to the class + you need to install lombok extension to the IDE (otherwise a lot error)
+- 
