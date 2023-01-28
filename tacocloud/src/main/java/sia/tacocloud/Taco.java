@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class Taco {
-    private final String name;
-    private final List<Ingredient> ingredients;
+    private String name;
+    private List<Ingredient> ingredients;
 }

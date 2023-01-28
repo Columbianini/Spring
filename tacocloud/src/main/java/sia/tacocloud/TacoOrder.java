@@ -7,14 +7,14 @@ import java.util.List;
 
 @Data
 public class TacoOrder {
-    private final String deliveryName;
-    private final String deliveryStreet;
-    private final String deliveryCity;
-    private final String deliveryState;
-    private final String deliveryZip;
-    private final String ccNumber;
-    private final String ccExpiration;
-    private final String ccCVV;
+    private String deliveryName;
+    private String deliveryStreet;
+    private String deliveryCity;
+    private String deliveryState;
+    private String deliveryZip;
+    private String ccNumber;
+    private String ccExpiration;
+    private String ccCVV;
 
     private final List<Taco> tacos = new ArrayList<>();
 
