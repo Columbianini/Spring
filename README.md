@@ -12,6 +12,10 @@
     - starter dependencies: DevTools, Thymeleaf, Web
 
 # Chapter 2 Developing Web applications
+- client send a request with a specific path, Spring will associate the specific path with a specific handler class. The handler class will run all `@MethodAttribute` function to get a `org.springframework.ui.Model` object and run the specific request's function (e.g. `@PostMapping`), which will return the view's name and bring `org.springframeworkui.Model` to the view
+- For request handler,
+  - return a string without prefix, this string is a filename under the `resources\templates` and the browser will render the **view**
+  - return a string with prefix `redirect: ... `, it will run the code of `...`  related **handler** method
 - job of MVC:
   - Model (controller's member function): defined in Controller class with `@org.springframework.web.bind.annotation.ModelAttribute`
   - view (html file under `/static`): render data to HTML using template such as avaServer Pages (JSP), Thymeleaf, FreeMarker, Mustache, and Groovy-based templates
@@ -29,14 +33,33 @@
     - `org.springframework.web.bind.annotation.SessionAttributes("tacoOrder)`: the `TacoOrder` object that is put into the `model attribute` in the `DesignTacoController` should be maintained in session
   - Method-Level annotation (the methods are `controller`'s methods)
     - `org.springframework.web.bind.annotation.GetMapping`: when `GET` request happen, the function will activate 
+    - `org.springframework.web.bind.annotation.PostMapping`: when `POST` request happen, the function will activate
+      - For `Post` handler method, you could have parameters
+        - Form object parameter (without annotation `@ModelAttribute`) : When the form is submitted, the fields in the form are bound to properties of a Taco object (whose class is shown in the next listing) that’s passed as a parameter into processTaco()
+        - Model Attribute parameter (with annotation `@ModelAttribute`): refer to the object (usually `@SessionAttributes(...)`) inside the `org.springframework.ui.Model` container
+        - `org.springframework.web.bind.support.SessionStatus`: by setting `sessionStatus.setComplete()`, we close the session and clear the cached SessionAttributes, for this case, `TacoOrder`
+      - when you want to redirect to another handler, pls return with prefix `redirect:...`, otherwise it will try to locate the file under `resources\templates` with filename equal to the return value
     - `@org.springframework.web.bind.annotation.ModelAttribute`: when a request happen, the function will activate and it want to add tuple (data name, data value) to `org.springframework.ui.Model`
       - add many attributes at same time: `model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type))`
       - add one attribute at one time: `@ModelAttribute(name="tacoOrder")` + the decorated function return model value
 - View
   - [`th:object`](https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html#handling-the-command-object): (i.e. the name of form-backing bean) the name Spring MVC gives to objects that model a form’s fields and provide getter and setter methods that will be used by the framework for establishing and obtaining the values input by the user at the browser side
+  - [`th:field`]: (could be private) field of the above form object
   - [`*{...}`](https://www.thymeleaf.org/doc/articles/standarddialect5minutes.html): selection expressions, just like variable expressions, except they will be executed on a nearest `th:object` instead of the whole context variables map (i.e. `Model Attributes`)
   - [`th:text`]: replace the text value inside the tag
   - [`th:each="ingredient : ${sauce}"`]: replicate the tag and its children in a for loop. In this case, we create a `ingredient` variable for the children tag, and it is one element of `Model["sauce"]`
+  - If there is no `action` inside the `<form>`, when the form is submitted, the browser will gather all the data in the form and send it to the server in an HTTP POST request to the same path for which a `GET` request displayed the form—the `/design` path
+  - When the form is submitted, the fields in the form are bound to properties of a `Taco` object (whose class is shown in the next listing and without annotation `ModelAttribute`) that’s passed as a parameter into `@PostMapping processTaco()`
+- Converter: 
+  - a class 
+    - that implements Spring's `Converter` interface and implements its `convert()` method to take one value and convert it to another
+    - that is annotated with `@Component`: Spring will automatically use the converter when the conversion of request parameters to bound properties is needed
+    - used when converting `<form>`'s `th:field` from type `String` to another type of the form object's field **with the same name**
+  
+
+Tips:
+- Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
+
 
 ToDo
 - I do not quite understand templates/design.html's ` <input th:field="*{ingredients}" type="checkbox" th:value="${ingredient.id}"/>` The part of `th:field` make me confusing. Let me know how it is rendered to html when continuing reading
