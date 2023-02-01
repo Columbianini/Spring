@@ -55,7 +55,14 @@
     - that implements Spring's `Converter` interface and implements its `convert()` method to take one value and convert it to another
     - that is annotated with `@Component`: Spring will automatically use the converter when the conversion of request parameters to bound properties is needed
     - used when converting `<form>`'s `th:field` from type `String` to another type of the form object's field **with the same name**
-  
+- Validate:
+  - 1st: import dependencies: `spring-boot-starter-validation`
+  - 2nd: add annotation on domain objects, e.g. (`javax.validation.constraints.NotNull`, ` javax.validation.constraints.Size` , `javax.validation.constraints.NotBlank`)[https://jakarta.ee/specifications/bean-validation/3.0/apidocs/], (`org.hibernate.validator.constraints.CreditCardNumber`)[https://docs.jboss.org/hibernate/validator/5.1/api/org/hibernate/validator/constraints/package-summary.html]
+  - 3rd: prefix `@Valid` on POST request handler function's form parameter
+    - normally, you will also add `org.springframework.validation.Errors` parameter
+  - 4th: in Thymeleaf html, add [`<span th:if="${#fields.hasErrors('ccNumber')}" th:errors="*{ccNumber}">cc Num Error</span>`](https://stackoverflow.com/questions/73597622/what-does-this-expression-mean-in-thymeleaf-form-validation)
+  - 
+  - 
 
 Tips:
 - Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
