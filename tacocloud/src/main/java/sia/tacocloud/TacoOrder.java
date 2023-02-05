@@ -7,10 +7,14 @@ import org.hibernate.validator.constraints.CreditCardNumber;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class TacoOrder {
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private Date placedAt;
     @NotBlank(message="Delivery name is required")
     private String deliveryName;
     @NotBlank(message="Street is required")
