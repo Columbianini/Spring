@@ -61,12 +61,46 @@
   - 3rd: prefix `@Valid` on POST request handler function's form parameter
     - normally, you will also add `org.springframework.validation.Errors` parameter
   - 4th: in Thymeleaf html, add [`<span th:if="${#fields.hasErrors('ccNumber')}" th:errors="*{ccNumber}">cc Num Error</span>`](https://stackoverflow.com/questions/73597622/what-does-this-expression-mean-in-thymeleaf-form-validation)
-  - 
-  - 
+
+
+# Chapter 3 Working with data
+- 1st: add `Id` and `Timestamp` to domain object
+- 2nd: add dependencies for `JdbcTemplate`: `spring-boot-starter-jdbc`
+- 3rd: add dependencies for embedded/external database: e.g. `com.h2database`
+- 4th: rename `resources\application.properties` to `resources\application.yml`, and add
+  - spring:
+    datasource:
+    generate-unique-name: false
+    name: tacocloud
+  - the database URL will be `jdbc:h2:mem:tacocloud`
+  - Spring Boot DevTools enables the database at http://localhost:8080/h2-console
+- 5th: create new repo interface `IngredientRepository`
+- 6th: implement above interface with class `JdbcIngredientRepository`
+  - `@Repository` will make Spring auto discover it 
+  - `@Autowired` on constructor: enables you to inject the object (`jdbcTemplate`) dependency implicitly
+  - [`@Transactional`](https://spring.io/guides/gs/managing-transactions/): any failure causes the entire operation to roll back to its previous state and to re-throw the original exception
+  - READ: `jdbcTemplate.query(...,...)`
+  - UPDATE/INSERT: `jdbcTemplate.update(...)`
+- 7th: create `src/main/resources/schema.sql` to define schema of table with name same as the domain object
+  -  If there’s a file named schema.sql in the root of the application’s classpath, then
+     the SQL in that file will be executed against the database when the application starts
+- 8th: create `src/main/resources/data.sql`
+  - Spring Boot will also execute a file named data.sql from the root of the classpath when
+    the application starts
+- Here jdbcTemplate is not ORM. **The domain object fields do not have relationship with the schema of database** If you check the database `Taco`, the schema has no relationship with `Taco` class
+- `jdbcTemplate` and `jdbcOperation` worked as db connection.
+  - `jdbcTemplate`: call `query(String, ...)`
+  - `jdbcOperation`: call `update(PreparedStatementCreator, KeyHolder)` and you can get the automatic generated value for the `Identity` field in sql table
+
 
 Tips:
 - Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
+- You can always using method reference or lambda function to implement SAM(Single Abstract Method) interface
+- you can use `orElse(null)` under `Optional` object
+- Persist: Data persistence is the collective set of mechanisms that allow you to save ("persist") your data somewhere before it evaporates from memory when you turn the power off
+- we `autowired`(DI) the interface rather than implementation (why?)[https://stackoverflow.com/questions/12899372/spring-why-do-we-autowire-the-interface-and-not-the-implemented-class]
 
 
 ToDo
 - I do not quite understand templates/design.html's ` <input th:field="*{ingredients}" type="checkbox" th:value="${ingredient.id}"/>` The part of `th:field` make me confusing. Let me know how it is rendered to html when continuing reading
+- How to do live reload debug?
