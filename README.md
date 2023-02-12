@@ -64,36 +64,50 @@
 
 
 # Chapter 3 Working with data
-- 1st: add `Id` and `Timestamp` to domain object
-- 2nd: add dependencies for `JdbcTemplate`: `spring-boot-starter-jdbc`
-- 3rd: add dependencies for embedded/external database: e.g. `com.h2database`
-- 4th: rename `resources\application.properties` to `resources\application.yml`, and add
-  - spring:
-    datasource:
-    generate-unique-name: false
-    name: tacocloud
-  - the database URL will be `jdbc:h2:mem:tacocloud`
-  - Spring Boot DevTools enables the database at http://localhost:8080/h2-console
-- 5th: create new repo interface `IngredientRepository`
-- 6th: implement above interface with class `JdbcIngredientRepository`
-  - `@Repository` will make Spring auto discover it 
-  - `@Autowired` on constructor: enables you to inject the object (`jdbcTemplate`) dependency implicitly
-  - [`@Transactional`](https://spring.io/guides/gs/managing-transactions/): any failure causes the entire operation to roll back to its previous state and to re-throw the original exception
-  - READ: `jdbcTemplate.query(...,...)`
-  - UPDATE/INSERT: `jdbcTemplate.update(...)`
-- 7th: create `src/main/resources/schema.sql` to define schema of table with name same as the domain object
-  -  If there’s a file named schema.sql in the root of the application’s classpath, then
-     the SQL in that file will be executed against the database when the application starts
-- 8th: create `src/main/resources/data.sql`
-  - Spring Boot will also execute a file named data.sql from the root of the classpath when
-    the application starts
-- Here jdbcTemplate is not ORM. **The domain object fields do not have relationship with the schema of database** If you check the database `Taco`, the schema has no relationship with `Taco` class
-- `jdbcTemplate` and `jdbcOperation` worked as db connection.
-  - `jdbcTemplate`: call `query(String, ...)`
-  - `jdbcOperation`: call `update(PreparedStatementCreator, KeyHolder)` and you can get the automatic generated value for the `Identity` field in sql table
+- Reading and Writing data to JDBC database
+  - 1st: add `Id` and `Timestamp` to domain object
+  - 2nd: add dependencies for `JdbcTemplate`: `spring-boot-starter-jdbc`
+  - 3rd: add dependencies for embedded/external database: e.g. `com.h2database`
+  - 4th: rename `resources\application.properties` to `resources\application.yml`, and add
+    - spring:
+      datasource:
+      generate-unique-name: false
+      name: tacocloud
+    - the database URL will be `jdbc:h2:mem:tacocloud`
+    - Spring Boot DevTools enables the database at http://localhost:8080/h2-console
+  - 5th: create new repo interface `IngredientRepository`
+  - 6th: implement above interface with class `JdbcIngredientRepository`
+    - `@Repository` will make Spring auto discover it 
+    - `@Autowired` on constructor: enables you to inject the object (`jdbcTemplate`) dependency implicitly
+    - [`@Transactional`](https://spring.io/guides/gs/managing-transactions/): any failure causes the entire operation to roll back to its previous state and to re-throw the original exception
+    - READ: `jdbcTemplate.query(...,...)`
+    - UPDATE/INSERT: `jdbcTemplate.update(...)`
+  - 7th: create `src/main/resources/schema.sql` to define schema of table with name same as the domain object
+    -  If there’s a file named schema.sql in the root of the application’s classpath, then
+       the SQL in that file will be executed against the database when the application starts
+  - 8th: create `src/main/resources/data.sql`
+    - Spring Boot will also execute a file named data.sql from the root of the classpath when
+      the application starts
+  - Here jdbcTemplate is not ORM. **The domain object fields do not have relationship with the schema of database** If you check the database `Taco`, the schema has no relationship with `Taco` class
+  - `jdbcTemplate` and `jdbcOperation` worked as db connection.
+    - `jdbcTemplate`: call `query(String, ...)`
+    - `jdbcOperation`: call `update(PreparedStatementCreator, KeyHolder)` and you can get the automatic generated value for the `Identity` field in sql table
+- Working with Spring Data JDBC (one of the Spring Data projects - I guess it is ORM. to be confirmed)
+  - 1st: add Spring Data JDBC to the build  
+  - 2nd: define repository interfaces
+    - extend `org.springframework.data.repository.CrudRepository< param1, param2 >`
+      - `param1`: object to be persisted 
+      - `param2`: type of ID
+  - 3rd: annotate the domain object
+    - annotate the class with `@Table`
+    - annotate the properties with `@Id`
+    - preload data with `CommandLineRunner`
+      - this is a SAM interface and a lambda function could be the interface's object
+      - How to implement in Spring? As the return value of a function annotated with `@Bean` under `TacocloudApplication.java`
+      - How it works? At application start, Spring will wire up (i.e. create) all the Beans. For `@Bean` function, Spring will run it and store its returned value in application context. Then in the application context, it will first run the `CommandLineRunner` object's `run` function
+    - solve issue [`Caused by: org.springframework.dao.IncorrectUpdateSemanticsDataAccessException: Failed to update entity [Ingredient(id=FLTO, name=Flour Tortilla, type=WRAP)]; Id [FLTO] not found in database`](https://stackoverflow.com/questions/64030718/spring-does-update-instead-of-save)
 
-
-Tips:
+- Tips:
 - Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
 - You can always using method reference or lambda function to implement SAM(Single Abstract Method) interface
 - you can use `orElse(null)` under `Optional` object
