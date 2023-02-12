@@ -5,16 +5,20 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Digits;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Data
+@Table
 public class TacoOrder {
     private static final long serialVersionUID = 1L;
+    @Id
     private Long id;
-    private Date placedAt;
+    private Date placedAt = new Date();
     @NotBlank(message="Delivery name is required")
     private String deliveryName;
     @NotBlank(message="Street is required")
