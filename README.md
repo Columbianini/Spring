@@ -106,13 +106,34 @@
       - How to implement in Spring? As the return value of a function annotated with `@Bean` under `TacocloudApplication.java`
       - How it works? At application start, Spring will wire up (i.e. create) all the Beans. For `@Bean` function, Spring will run it and store its returned value in application context. Then in the application context, it will first run the `CommandLineRunner` object's `run` function
     - solve issue [`Caused by: org.springframework.dao.IncorrectUpdateSemanticsDataAccessException: Failed to update entity [Ingredient(id=FLTO, name=Flour Tortilla, type=WRAP)]; Id [FLTO] not found in database`](https://stackoverflow.com/questions/64030718/spring-does-update-instead-of-save)
+- Working with Spring Data JPA (no need to write schema.sql)
+  - add dependencies: `spring-boot-starter-data-jpa`
+  - annotate the domain as entities:
+    - annotations over domain class
+      - `@jakarta.persistence.Entity`
+      - `@lombok.NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)`
+        - force = true: the Lombok-generated constructor setting properties to a default value of null, 0, or false
+      - `@lombok.AllArgsConstructor`
+      - [`@lombok.RequiredArgsConstructor`](https://javabydeveloper.com/lombok-requiredargsconstructor-examples/)
+    - annotations over ID property:
+      - `@jakarta.persistence.GeneratedValue(strategy = GenerationType.AUTO)`
+      - `@jakarta.persistence.Id`
+    - annotations over List<...> properties:
+      - `@ManyToMany()`: declare the relationship between an object (e.g. Taco) and its List property (e.g. List<Ingredient>), a Taco can have many Ingredient, and one Ingredient can be in many Taco
+      - `@OneToMany(cascade=CascadeType.ALL)`: TacoOrder::List<Taco>, one TacoOrder object can have many Taco objects, but one Taco object belong to only one TacoOrder. For the Cascade, if CascadeType.All, then if you delete one TacoOrder, you will delete all the Tacos related
+    - declare JPA repositories
+      - similar to JDBC
+      - define interface extends `CrudRepository< object type, ID type >`
+    - customize repositories
+      - [naming Convention](https://www.baeldung.com/spring-data-derived-queries): < verb, e.g. find >By< field name e.g. deliveryZip >< predicate e.g. Between, IsNotNull... >And< field name >< predicate > (args...)
+      - [`@Query( {JPA Query} )`] over a customized function name
 
 - Tips:
 - Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
 - You can always using method reference or lambda function to implement SAM(Single Abstract Method) interface
 - you can use `orElse(null)` under `Optional` object
 - Persist: Data persistence is the collective set of mechanisms that allow you to save ("persist") your data somewhere before it evaporates from memory when you turn the power off
-- we `autowired`(DI) the interface rather than implementation (why?)[https://stackoverflow.com/questions/12899372/spring-why-do-we-autowire-the-interface-and-not-the-implemented-class]
+- we `autowired`(DI) the interface rather than implementation [why?](https://stackoverflow.com/questions/12899372/spring-why-do-we-autowire-the-interface-and-not-the-implemented-class)
 
 
 ToDo
