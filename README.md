@@ -127,6 +127,18 @@
     - customize repositories
       - [naming Convention](https://www.baeldung.com/spring-data-derived-queries): < verb, e.g. find >By< field name e.g. deliveryZip >< predicate e.g. Between, IsNotNull... >And< field name >< predicate > (args...)
       - [`@Query( {JPA Query} )`] over a customized function name
+- Working with MongoDB
+  - Step 1: add dependencies for mongoDB: `spring-boot-starter-data-mongodb`
+  - Step 2: add dependencies for embedded db for testing/developing purpose: `de.flapdoodle.embed.mongo`
+    - H2 for relational data and Flapdoodle for non-relational data
+    - embedded db = in-memory db, you won’t need to have a separate database running, but all data will be wiped clean when you restart the application
+  - Step 3: Mapping domain types to documents
+    - `@Id`: Designates a property as the document ID (from Spring Data Commons)
+    - `@Document`: Declares a domain type as a document to be persisted to MongoDB
+    - `@Field`: Specifies the field name (and, optionally, the order) for storing a property in the persisted document
+    - `@Transient`: Specifies that a property is not to be persisted
+  - not working 🤣
+
 
 - Tips:
 - Solved Error: `Failed to transfer...` by [link](https://stackoverflow.com/questions/5074063/maven-error-failure-to-transfer)
